@@ -82,7 +82,8 @@ int main() {
             case 'C':
                 cin >> l >> r >> d;
                 --l, --r;
-                root[++sgt.t] = sgt.upd(l, r, d);
+                root[sgt.t + 1] = sgt.upd(l, r, d);
+                ++sgt.t;
                 break;
             case 'Q':
                 cin >> l >> r;
