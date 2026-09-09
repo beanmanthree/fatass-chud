@@ -45,10 +45,10 @@ struct SGT {
             tree[nv].a += a;
             return nv;
         }
-        const int m{(l + r / 2)};
+        const int m{(l + r) / 2};
         tree[nv].l = upd(ql, qr, a, tree[nv].l, l, m);
         tree[nv].r = upd(ql, qr, a, tree[nv].r, m + 1, r);
-        tree[nv].x = tree[tree[nv].l].x + tree[tree[nv].r].x;
+        tree[nv].x = tree[tree[nv].l].x + tree[tree[nv].r].x + tree[nv].a * (r - l + 1);
         return nv;
     }
     ll qry(int ql, int qr, int v) {
@@ -70,8 +70,8 @@ int main() {
     int n, m;
     cin >> n >> m;
     vector<int> arr(n);
-    SGT sgt{n, arr};
     for (int i{0}; i < n; ++i) cin >> arr[i];
+    SGT sgt{n, arr};
     for (int i{0}; i < m; ++i) {
         char c;
         cin >> c;
