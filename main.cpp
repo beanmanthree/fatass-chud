@@ -4,17 +4,19 @@ using namespace std;
 
 using ll = long long;
 
+struct Node {
+    ll x{0};
+    int l{-1}, r{-1};
+    ll a{0};
+    Node() {}
+    Node (ll x) : x{x} {}
+    Node (ll x, int l, int r) : x{x}, l{l}, r{r} {}
+};
+
+Node tree[40 * 100000]{};
+int root[100001]{};
+
 struct SGT {
-    struct Node {
-        ll x{0};
-        int l{-1}, r{-1};
-        ll a{0};
-        Node() {}
-        Node (ll x) : x{x} {}
-        Node (ll x, int l, int r) : x{x}, l{l}, r{r} {}
-    };
-    static inline Node tree[40 * 100000]{};
-    static inline int root[100001]{};
     int ptr{0};
     int t{-1};
     const int n{};
@@ -80,17 +82,17 @@ int main() {
             case 'C':
                 cin >> l >> r >> d;
                 --l, --r;
-                sgt.root[++sgt.t] = sgt.upd(l, r, d);
+                root[++sgt.t] = sgt.upd(l, r, d);
                 break;
             case 'Q':
                 cin >> l >> r;
                 --l, --r;
-                cout << sgt.qry(l, r, sgt.root[sgt.t]) << '\n';
+                cout << sgt.qry(l, r, root[sgt.t]) << '\n';
                 break;
             case 'H':
                 cin >> l >> r >> t;
                 --l, --r;
-                cout << sgt.qry(l, r, sgt.root[t]) << '\n';
+                cout << sgt.qry(l, r, root[t]) << '\n';
                 break;
             default:
                 cin >> t;
