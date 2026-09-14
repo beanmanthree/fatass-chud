@@ -16,14 +16,14 @@ cat > "$NVIM_DIR/lua/config/options.lua" << 'EOF'
 vim.opt.tabstop = 4
 vim.opt.shiftwidth = 4
 vim.opt.expandtab = true
-vim.opt.colorcolumn = "80"
+vim.opt.colorcolumn = "100"
 vim.opt.cursorline = true
 EOF
 
 mkdir -p "$HOME/.config/clang"
 cat > "$HOME/.clang-format" << 'EOF'
-BasedOnStyle: LLVM
 IndentWidth: 4
 UseTab: Never
 TabWidth: 4
+ColumnLimit 100
 EOF

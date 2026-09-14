@@ -3,6 +3,6 @@
 #include "ansi.h"
 
 int main() {
-    printf(ANSI_BOLD "hi" ANSI_RESET " yo");
+    printf(ANSI_FG_RED "hi " ANSI_RESET "yo");
     return 0;
 }
