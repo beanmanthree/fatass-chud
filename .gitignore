@@ -1,0 +1,11 @@
+main
+*.out
+*.exe
+
+*.o
+*.obj
+
+*.d
+
+build/
+dist/
