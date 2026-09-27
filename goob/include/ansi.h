@@ -13,8 +13,8 @@
 #define ANSI_SLOW_BLINK "\x1b[5m"
 #define ANSI_FAST_BLINK "\x1b[6m"
 #define ANSI_INVERSE "\x1b[7m"
-#define ANSI_HIDDEN "\x1b[7m"
-#define ANSI_STRIKE "\x1b[8m"
+#define ANSI_HIDDEN "\x1b[8m"
+#define ANSI_STRIKE "\x1b[9m"
 
 #define ANSI_FG_DEFAULT "\x1b[39m"
 #define ANSI_FG_BLACK "\x1b[30m"

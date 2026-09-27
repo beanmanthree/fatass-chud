@@ -37,9 +37,9 @@ void ANSI_moveTo(int r, int c) {
 }
 
 void ANSI_saveCursor(void) {
-    printf(ANSI_CSI "[s");
+    printf(ANSI_CSI "s");
 }
 
 void ANSI_restoreCursor(void) {
-    printf(ANSI_CSI "[u");
+    printf(ANSI_CSI "u");
 }
