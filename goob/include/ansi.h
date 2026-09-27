@@ -66,8 +66,9 @@ void ANSI_moveForward(int n);
 void ANSI_moveBackward(int n);
 
 void ANSI_moveTo(int r, int c);
+void ANSI_clearScreen(void);
 
-void ANSI_saveCursor();
-void ANSI_restoreCursor();
+void ANSI_saveCursor(void);
+void ANSI_restoreCursor(void);
 
 #endif

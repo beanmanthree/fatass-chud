@@ -36,6 +36,10 @@ void ANSI_moveTo(int r, int c) {
     printf(ANSI_CSI "%d;%dH", r, c);
 }
 
+void ANSI_clearScreen(void) {
+    printf(ANSI_CSI "2J");
+}
+
 void ANSI_saveCursor(void) {
     printf(ANSI_CSI "s");
 }
