@@ -69,8 +69,8 @@ void GRAPHICS_getTerminalDimensions(int* x0Out, int* y0Out, int* x1Out, int* y1O
     *y1Out = y1;
 }
 
-void GRAPHICS_draw8(int value) {
-    const char lkp[8] = {'.', ':', '-', '=', '+', '*', '#', '@'};
+void GRAPHICS_put8(int value) {
+    const char lkp[8] = {'.', '-', ':', '=', '+', '*', '#', '@'};
     value = value < -8 ? -8 : value > 8 ? 8 : value;
     if (value < 0) {
         printf(ANSI_DIM);
@@ -78,9 +78,8 @@ void GRAPHICS_draw8(int value) {
         printf(ANSI_RESET);
     } else if (value > 0) putchar(lkp[value - 1]);
     else putchar(' ');
-    fflush(stdout);
 }
 
-void GRAPHICS_drawf(float value) {
-    GRAPHICS_draw8(roundf(value * 8));
+void GRAPHICS_putf(float value) {
+    GRAPHICS_put8(roundf(value * 8));
 }
