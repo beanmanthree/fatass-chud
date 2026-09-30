@@ -1,8 +1,9 @@
 #ifndef UTILS_H
 #define UTILS_H
 
-char getch(void);
+#define PI 3.14159265f
 
+char getch(void);
 int getchNB(char* key);
 
 void sleepms(unsigned int ms);
