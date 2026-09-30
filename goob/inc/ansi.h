@@ -1,8 +1,6 @@
 #ifndef ANSI_H
 #define ANSI_H
 
-#include <stdio.h>
-
 #define ANSI_CSI "\x1b["
 
 #define ANSI_RESET "\x1b[0m"
@@ -53,8 +51,6 @@
 #define ANSI_BG_BRIGHT_MAGENTA "\x1b[105m"
 #define ANSI_BG_BRIGHT_CYAN "\x1b[106m"
 #define ANSI_BG_BRIGHT_WHITE "\x1b[107m"
-
-char ANSI_getch(void);
 
 void ANSI_fg256(int idx);
 void ANSI_bg256(int idx);

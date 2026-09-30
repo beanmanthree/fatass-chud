@@ -1,25 +1,6 @@
 #include "ansi.h"
 
-#ifdef _WIN32
-    #include <conio.h>
-    char ANSI_getch(void) {
-        return _getch();
-    }
-#else
-    #include <unistd.h>
-    #include <termios.h>
-    char ANSI_getch(void) {
-        struct termios oldt, newt;
-        char ch;
-        tcgetattr(STDIN_FILENO, &oldt);
-        newt = oldt;
-        newt.c_lflag &= ~(ICANON | ECHO);
-        tcsetattr(STDIN_FILENO, TCSANOW, &newt);
-        if (read(STDIN_FILENO, &ch, 1) == -1) return EOF;
-        tcsetattr(STDIN_FILENO, TCSANOW, &oldt);
-        return ch;
-    }
-#endif
+#include <stdio.h>
 
 void ANSI_fg256(int idx) {
     printf(ANSI_CSI "38;5;%dm", idx);

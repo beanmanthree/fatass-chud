@@ -1,14 +1,16 @@
 #include "graphics.h"
 
 #include <math.h>
+#include <stdio.h>
 
 #include "ansi.h"
+#include "utils.h"
 
 void GRAPHICS_getTerminalDimensions(int* x0Out, int* y0Out, int* x1Out, int* y1Out) {
     const char tl = '/', tr = '\\', bl = '\\', br = '/';
     const char h = '-', v = '|';
     int x0 = 1, y0 = 1;
-    for (char c = ' '; c != '\n'; c = ANSI_getch()) {
+    for (char c = ' '; c != '\n'; c = getch()) {
         switch (c) {
             case 'w':
                 if (y0 > 1) --y0;
@@ -31,7 +33,7 @@ void GRAPHICS_getTerminalDimensions(int* x0Out, int* y0Out, int* x1Out, int* y1O
         fflush(stdout);
     }
     int x1 = x0 + 1, y1 = y0 + 1;
-    for (char c = ' '; c != '\n'; c = ANSI_getch()) {
+    for (char c = ' '; c != '\n'; c = getch()) {
         switch (c) {
             case 'w':
                 if (y1 > y0 + 1) --y1;
