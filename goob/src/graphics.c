@@ -10,6 +10,7 @@ void GRAPHICS_getTerminalDimensions(int* x0Out, int* y0Out, int* x1Out, int* y1O
     const char tl = '/', tr = '\\', bl = '\\', br = '/';
     const char h = '-', v = '|';
     int x0 = 1, y0 = 1;
+    printf(ANSI_BOLD);
     for (char c = ' '; c != '\n'; c = getch()) {
         switch (c) {
             case 'w':
@@ -27,9 +28,7 @@ void GRAPHICS_getTerminalDimensions(int* x0Out, int* y0Out, int* x1Out, int* y1O
         }
         ANSI_clearScreen();
         ANSI_moveTo(y0, x0);
-        printf(ANSI_SLOW_BLINK);
         putchar(tl);
-        printf(ANSI_RESET);
         fflush(stdout);
     }
     int x1 = x0 + 1, y1 = y0 + 1;
@@ -65,6 +64,7 @@ void GRAPHICS_getTerminalDimensions(int* x0Out, int* y0Out, int* x1Out, int* y1O
         }
         fflush(stdout);
     }
+    printf(ANSI_RESET);
     *x0Out = x0;
     *y0Out = y0;
     *x1Out = x1;

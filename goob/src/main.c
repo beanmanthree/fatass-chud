@@ -9,7 +9,7 @@
 float getBorderInverse(float x0, float y0, float x1, float y1, float a, float b, float falloff) {
     float mn0 = a - x0 < x1 - a ? a - x0: x1 - a;
     float mn1 = b - y0 < y1 - b ? b - y0 : y1 - b;
-    return 1.0001f / ((mn0 < mn1 ? mn0 : mn1) * falloff + 1.f);
+    return 1.00001f / ((mn0 < mn1 ? mn0 : mn1) * falloff + 1.f);
 }
 
 float getMetaBall(float x, float y, float radius, float a, float b) {
@@ -19,7 +19,7 @@ float getMetaBall(float x, float y, float radius, float a, float b) {
 float* generateBalls(int ballCount) {
     float* balls = (float*)malloc(ballCount * 5 * sizeof(float));
     for (int i = 0; i < ballCount; ++i) {
-        balls[i * 5 + 0] = 1.f;
+        balls[i * 5 + 0] = rand() / (float)RAND_MAX + 1.f;
         balls[i * 5 + 1] = rand() / (float)RAND_MAX * 8 - 4;
         balls[i * 5 + 2] = rand() / (float)RAND_MAX * 8 - 4;
         balls[i * 5 + 3] = rand() / (float)RAND_MAX * 8 - 4;
@@ -33,59 +33,64 @@ void calculateParametric(float x0, float y0, float x1, float y1, float t, float 
     *outy = ((y1 - y0) * sinf(c * t + d) + (y0 + y1)) / 2;
 }
 
-float calcPoint(int w, int h, float a, float b, float t, float* balls, int ballCount) {
+float calcPoint(int w, int h, float a, float b, float* balls, float* centers, int ballCount) {
     float sum = getBorderInverse(0, 0, w, h, a, b, 8);
     for (int k = 0; k < ballCount; ++k) {
-        float x, y;
-        calculateParametric(0, 0, w, h, t, balls[k * 5 + 1], balls[k * 5 + 2], balls[k * 5 + 3], balls[k * 5 + 4], &x, &y);
-        sum += getMetaBall(x, y, balls[k * 5 + 0], a, b);
+        sum += getMetaBall(centers[k * 2], centers[k * 2 + 1], balls[k * 5 + 0], a, b);
     }
     return sum;
 }
 
-void fillMatrix(bool* mat, int w, int h, float t, float* balls, int ballCount) {
+void fillMatrix(bool* mat, int w, int h, float t, float* balls, float* centers, int ballCount) {
+    for (int k = 0; k < ballCount; ++k) {
+        calculateParametric(0, 0, w, h, t, balls[k * 5 + 1], balls[k * 5 + 2], balls[k * 5 + 3], balls[k * 5 + 4], centers + k * 2, centers + k * 2 + 1);
+    }
     for (int i = 0; i < w; ++i) {
         for (int j = 0; j < h; ++j) {
-            mat[i * h + j] = calcPoint(w - 1, h - 1, i, j, t, balls, ballCount) > 1;
+            mat[i * h + j] = calcPoint(w - 1, h - 1, i, j, balls, centers, ballCount) > 1;
         }
     }
 }
 
-void getRGB(int x0, int y0, int x1, int y1, int t, float mul, int i, int j, int* outr, int* outg, int* outb) {
+void getRGB(int x0, int y0, int x1, int y1, float t, float mul, int i, int j, int* outr, int* outg, int* outb) {
     t *= mul;
     float x = (float)(i - x0) / (float)(x1 - x0);
     float y = (float)(j - y0) / (float)(y1 - y0);
-    double waver = sin(x * 5.0 + t * 1.5) * 0.5 + sin(y * 3.0 - t * 1.0) * 0.5;
-    double waveg = sin(y * 4.0 + t * 2.0) * 0.5 + sin(x * 2.0 + t * 0.5) * 0.5;
-    double waveb = sin((x + y) * 3.5 - t * 1.2) * 0.5 + sin(x * 4.0 + t * 2.5) * 0.5;
-    double normr = (waver * 0.5) + 0.5;
-    double normg = (waveg * 0.5) + 0.5;
-    double normb = (waveb * 0.5) + 0.5;
+    float waver = 0.45 * sinf(x * 7.0 + y * 2.0 + t * 5.0) + 0.30 * sinf(y * 9.0 - x * 3.0 - t * 3.7) + 0.25 * sinf((x + y) * 5.0 + sinf(t * 1.3 + y * 4.0) * 1.5);
+    float waveg = 0.45 * sinf(y * 8.0 - x * 2.0 + t * 4.3) + 0.30 * sinf(x * 6.0 + y * 5.0 - t * 5.6) + 0.25 * sinf((x - y) * 7.0 + sinf(t * 1.1 + x * 3.0) * 1.5);
+    float waveb = 0.45 * sinf((x + y) * 6.0 - t * 4.8) + 0.30 * sinf(x * 10.0 - y * 4.0 + t * 3.3) + 0.25 * sinf((x * 2.0 + y) * 4.0 + sinf(t * 1.5 - y * 5.0) * 1.5);
+    float normr = (waver + 1.0) * 0.5;
+    float normg = (waveg + 1.0) * 0.5;
+    float normb = (waveb + 1.0) * 0.5;
     *outr = (int)(normr * 255.0);
     *outg = (int)(normg * 255.0);
     *outb = (int)(normb * 255.0);
 }
 
-void drawContour(char* lkp, int x0, int y0, int x1, int y1, bool* mat, int w, int h, float t, float* balls, int ballCount) {
-    fillMatrix(mat, w, h, t, balls, ballCount);
+void drawContour(bool* buf, char* chrs, int x0, int y0, int x1, int y1, bool* mat, int w, int h, float t, float* balls, float* centers, int ballCount) {
+    fillMatrix(mat, w, h, t, balls, centers, ballCount);
     bool last = false;
     for (int j = y0; j <= y1; ++j) {
         for (int i = x0; i <= x1; ++i) {
-            int a = i - x0, b = j - y0;
+            int x = i - x0, y = j - y0;
             bool big = false, small = false;
-            for (int ai = 0; ai < 2; ++ai) {
-                for (int bi = 0; bi < 2; ++bi) {
-                    if (mat[(a + ai) * h + (b + bi)]) big = true;
+            for (int ax = 0; ax < 2; ++ax) {
+                for (int ay = 0; ay < 2; ++ay) {
+                    if (mat[(x + ax) * h + (y + ay)]) big = true;
                     else small = true;
                 }
             }
-            if (big && small) {
+            bool set = big && small;
+            if (buf[x * (h - 1) + y] != set) {
+                buf[x * (h - 1) + y] = set;
                 if (!last) ANSI_moveTo(j, i);
                 last = true;
-                int r, g, b;
-                getRGB(x0, y0, x1, y1, t, 100, i, j, &r, &g, &b);
-                ANSI_fgRgb(r, g, b);
-                putchar(lkp[a * (h - 1) + b]);
+                if (set) {
+                    int r, g, b;
+                    getRGB(x0, y0, x1, y1, t, 10, i, j, &r, &g, &b);
+                    ANSI_fgRgb(r, g, b);
+                    putchar(chrs[x * (h - 1) + y]);
+                } else putchar(' ');
             } else last = false;
         }
         last = false;
@@ -108,20 +113,30 @@ int main(int argc, char *argv[]) {
     } else {
         GRAPHICS_getTerminalDimensions(&x0, &y0, &x1, &y1);
     }
+    ANSI_clearScreen();
     const int w = x1 - x0 + 2, h = y1 - y0 + 2;
     bool* mat = malloc(w * h * sizeof(bool));
-    char* lkp = malloc((w - 1) * (h - 1) * sizeof(char));
+    char* chrs = malloc((w - 1) * (h - 1) * sizeof(char));
     const char chars[8] = {'@', '#', '!', '$', '%', '&', '8', '?'};
-    for (int i = (w - 1) * (h - 1) - 1; i >= 0; --i) lkp[i] = chars[rand() % 8];
-    const int ballCount = 0;
+    for (int i = 0; i < (w - 1) * (h - 1); ++i) chrs[i] = chars[rand() % 8];
+    bool* buf = calloc((w - 1) * (h - 1), sizeof(bool));
+    const int ballCount = 25;
     float* balls = generateBalls(ballCount);
+    float* centers = malloc(ballCount * 2 * sizeof(float));
     char key;
     for (float t = 0; getchNB(&key) == 0 || key != '\n'; t += 0.001) {
-        ANSI_clearScreen();
-        drawContour(lkp, x0, y0, x1, y1, mat, w, h, t, balls, ballCount);
+        drawContour(buf, chrs, x0, y0, x1, y1, mat, w, h, t, balls, centers, ballCount);
         fflush(stdout);
         sleepms(16);
     }
+    printf(ANSI_RESET);
     ANSI_showCursor();
+    putchar('\n');
+    fflush(stdout);
+    free(balls);
+    free(centers);
+    free(mat);
+    free(chrs);
+    free(buf);
     return 0;
 }
